@@ -40,14 +40,62 @@ namespace Pathfinding.NodeDrawing
 
         public async Task FindPath()
         {
+            Node currentNode = startNode;
+            var values = Enum.GetValues(typeof(Direction));
+            foreach(Direction dir in values)
+            {
+                var node = GetNextNode(currentNode, dir);
+                node.SetType(NodeType.Closed);
+            }
+        }
 
+        public Node GetNextNode(Node node, Direction dir)
+        {
+            var x = node.Position.X;
+            var y = node.Position.Y;
+            var nodeSize = NODE_SIZE;
+            Point nodePt = new Point(-1, -1);
+            switch (dir)
+            {
+                case Direction.Down:
+                    nodePt = new Point(x, y + nodeSize);
+                    break;
+
+                case Direction.Up:
+                    nodePt = new Point(x, y - nodeSize);
+                    break;
+
+                case Direction.Left:
+                    nodePt = new Point(x - nodeSize, y);
+                    break;
+
+                case Direction.Right:
+                    nodePt = new Point(x + nodeSize, y);
+                    break;
+
+                case Direction.RUp:
+                    nodePt = new Point(x + nodeSize, y - nodeSize);
+                    break;
+
+                case Direction.RDown:
+                    nodePt = new Point(x + nodeSize, y + nodeSize);
+                    break;
+
+                case Direction.LUp:
+                    nodePt = new Point(x - nodeSize, y - nodeSize );
+                    break;
+
+                case Direction.LDown:
+                    nodePt = new Point(x - nodeSize, y + nodeSize);
+                    break;
+            }
+            if (nodePt.X == -1) return null;
+            return GetNode(nodePt);
         }
 
         public void ToggleWall(Point pt)
         {
-            var x =pt.X - pt.X % NODE_SIZE;
-            var y = pt.Y - pt.Y % NODE_SIZE;
-            var node = DrawnNodes[new Point(x, y)];
+            var node = GetNode(pt);
             if (node.Type == NodeType.Open)
             {
                 node.SetType(NodeType.Wall);
@@ -57,5 +105,29 @@ namespace Pathfinding.NodeDrawing
                 node.SetType(NodeType.Open);
             }
         }
+
+        public Node GetNode(Point pt)
+        {
+            var x = pt.X - pt.X % NODE_SIZE;
+            var y = pt.Y - pt.Y % NODE_SIZE;
+            try
+            {
+                var node = DrawnNodes[new Point(x, y)];
+                return node;
+            }
+            catch { return null; }
+        }
+    }
+
+    public enum Direction
+    {
+        Up,
+        Right,
+        Down,
+        Left,
+        RUp,
+        RDown,
+        LUp,
+        LDown
     }
 }

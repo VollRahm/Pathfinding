@@ -14,6 +14,7 @@ namespace Pathfinding.NodeDrawing
     {
         public Border Element { get; set; }
         public NodeType Type { get; protected set; }
+        public Point Position { get; protected set; }
 
         public Color Color
         {
@@ -42,6 +43,7 @@ namespace Pathfinding.NodeDrawing
         {
             Canvas.SetLeft(Element, pt.X);
             Canvas.SetTop(Element, pt.Y);
+            Position = pt;
         }
 
         public void Remove()
