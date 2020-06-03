@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pathfinding"
         mc:Ignorable="d"
-        Title="MainWindow" Height="817.4" Width="1016" ResizeMode="NoResize" Loaded="Window_Loaded">
+        Title="MainWindow" Height="701.4" Width="1016" ResizeMode="NoResize" Loaded="Window_Loaded">
     <StackPanel>
         <Canvas MouseUp="MainCanvas_MouseUp" Height="600" Width="1000" Background="White" HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="MainCanvas"/>
-        <Button Click="Start_Click" Content="Start"></Button>
-        <Button Click="Clear_Click" Content="Clear"></Button>
+        <Button Click="Start_Click" Content="Start" FontSize="20"></Button>
+        <Button Click="Clear_Click" Content="Clear" FontSize="20"></Button>
     </StackPanel>
 </Window>

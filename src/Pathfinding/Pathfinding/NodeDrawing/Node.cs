@@ -16,6 +16,7 @@ namespace Pathfinding.NodeDrawing
         public NodeType Type { get; protected set; }
         public Point Position { get; protected set; }
         public double FCost { get; set; }
+        public Node ParentNode { get; set; }
 
         public Color Color
         {

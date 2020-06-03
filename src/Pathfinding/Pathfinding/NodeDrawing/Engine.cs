@@ -53,19 +53,34 @@ namespace Pathfinding.NodeDrawing
             {
                 passedNodes.AddRange(GetSurroundingNodes(currentNode));
                 passedNodes = passedNodes.OrderBy(x => x.FCost).ToList();
-                currentNode = GetFirstAvailableNode(passedNodes, currentNode);
+                var newNode = GetFirstAvailableNode(passedNodes, currentNode);
+                currentNode = newNode;
                 if (currentNode == null) break;
                 if (currentNode == endNode) break;
                 currentNode.SetType(NodeType.Closed);
                 await Task.Delay(10);
             }
-            if(currentNode == endNode)
+            await TraceBackNodes(currentNode);
+            if (currentNode == endNode)
             {
                 MessageBox.Show("Found path!");
             }
             else
             {
                 MessageBox.Show("No path found :(");
+            }
+            
+        }
+
+        private async Task TraceBackNodes(Node finishingNode)
+        {
+            var currentNode = finishingNode;
+            while (currentNode != null)
+            {
+                if (currentNode == startNode) break;
+                currentNode.SetType(NodeType.Finish);
+                currentNode = currentNode.ParentNode;
+                await Task.Delay(10);
             }
         }
 
@@ -87,9 +102,10 @@ namespace Pathfinding.NodeDrawing
                 if (nextNode.Type == NodeType.Closed) continue;
                 if (nextNode.Type == NodeType.Wall) continue;
                 nextNode.FCost = GetNodeFCost(nextNode);
+                nextNode.ParentNode = node;
                 nodes.Add(nextNode);
             }
-            Console.WriteLine();
+            //Console.WriteLine();
             return nodes;
         }
 
@@ -97,7 +113,7 @@ namespace Pathfinding.NodeDrawing
         {
             var gcost = Helper.Pythag(node.Position, startNode.Position);
             var hcost = Helper.Pythag(node.Position, endNode.Position);
-            Console.WriteLine($"GCost: {Math.Round(gcost, 2).ToString("#.00")} | HCost: {Math.Round(hcost,2)} | FCost: {Math.Round(gcost + hcost, 2)}");
+            //Console.WriteLine($"GCost: {Math.Round(gcost, 2).ToString("#.00")} | HCost: {Math.Round(hcost,2)} | FCost: {Math.Round(gcost + hcost, 2)}");
             return gcost + hcost;
         }
 
