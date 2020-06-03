@@ -38,18 +38,70 @@ namespace Pathfinding.NodeDrawing
             }
         }
 
+        public void Clear()
+        {
+            DrawnNodes.Values.ToList().ForEach(x => { if (x != startNode && x != endNode && x.Type != NodeType.Wall) x.SetType(NodeType.Open); });
+        }
+
         public async Task FindPath()
         {
+            Clear();
             Node currentNode = startNode;
-            var values = Enum.GetValues(typeof(Direction));
-            foreach(Direction dir in values)
+            var passedNodes = new List<Node>();
+   
+            while (true)
             {
-                var node = GetNextNode(currentNode, dir);
-                node.SetType(NodeType.Closed);
+                passedNodes.AddRange(GetSurroundingNodes(currentNode));
+                passedNodes = passedNodes.OrderBy(x => x.FCost).ToList();
+                currentNode = GetFirstAvailableNode(passedNodes, currentNode);
+                if (currentNode == null) break;
+                if (currentNode == endNode) break;
+                currentNode.SetType(NodeType.Closed);
+                await Task.Delay(10);
+            }
+            if(currentNode == endNode)
+            {
+                MessageBox.Show("Found path!");
+            }
+            else
+            {
+                MessageBox.Show("No path found :(");
             }
         }
 
-        public Node GetNextNode(Node node, Direction dir)
+        private Node GetFirstAvailableNode(List<Node> nodes, Node excludedNode)
+        {
+            return nodes.Where(x => x != excludedNode && x.Type != NodeType.Closed).FirstOrDefault();
+        }
+
+        private List<Node> GetSurroundingNodes(Node node)
+        {
+            var nodes = new List<Node>();
+            var directions = Enum.GetValues(typeof(Direction));
+            foreach (Direction dir in directions)
+            {
+                
+                var nextNode = GetNextNode(node, dir);
+                if (nextNode == startNode) continue;
+                if (nextNode == null) continue;
+                if (nextNode.Type == NodeType.Closed) continue;
+                if (nextNode.Type == NodeType.Wall) continue;
+                nextNode.FCost = GetNodeFCost(nextNode);
+                nodes.Add(nextNode);
+            }
+            Console.WriteLine();
+            return nodes;
+        }
+
+        private double GetNodeFCost(Node node)
+        {
+            var gcost = Helper.Pythag(node.Position, startNode.Position);
+            var hcost = Helper.Pythag(node.Position, endNode.Position);
+            Console.WriteLine($"GCost: {Math.Round(gcost, 2).ToString("#.00")} | HCost: {Math.Round(hcost,2)} | FCost: {Math.Round(gcost + hcost, 2)}");
+            return gcost + hcost;
+        }
+
+        private Node GetNextNode(Node node, Direction dir)
         {
             var x = node.Position.X;
             var y = node.Position.Y;
@@ -60,31 +112,24 @@ namespace Pathfinding.NodeDrawing
                 case Direction.Down:
                     nodePt = new Point(x, y + nodeSize);
                     break;
-
                 case Direction.Up:
                     nodePt = new Point(x, y - nodeSize);
                     break;
-
                 case Direction.Left:
                     nodePt = new Point(x - nodeSize, y);
                     break;
-
                 case Direction.Right:
                     nodePt = new Point(x + nodeSize, y);
                     break;
-
                 case Direction.RUp:
                     nodePt = new Point(x + nodeSize, y - nodeSize);
                     break;
-
                 case Direction.RDown:
                     nodePt = new Point(x + nodeSize, y + nodeSize);
                     break;
-
                 case Direction.LUp:
                     nodePt = new Point(x - nodeSize, y - nodeSize );
                     break;
-
                 case Direction.LDown:
                     nodePt = new Point(x - nodeSize, y + nodeSize);
                     break;
@@ -106,7 +151,7 @@ namespace Pathfinding.NodeDrawing
             }
         }
 
-        public Node GetNode(Point pt)
+        private Node GetNode(Point pt)
         {
             var x = pt.X - pt.X % NODE_SIZE;
             var y = pt.Y - pt.Y % NODE_SIZE;

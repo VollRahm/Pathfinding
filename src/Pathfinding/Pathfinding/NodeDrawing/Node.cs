@@ -15,6 +15,7 @@ namespace Pathfinding.NodeDrawing
         public Border Element { get; set; }
         public NodeType Type { get; protected set; }
         public Point Position { get; protected set; }
+        public double FCost { get; set; }
 
         public Color Color
         {

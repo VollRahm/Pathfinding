@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,10 +21,14 @@ namespace Pathfinding
     /// </summary>
     public partial class MainWindow : Window
     {
+        [DllImport("kernel32.dll")]
+        public static extern bool AllocConsole();
+
         public MainWindow()
         {
             InitializeComponent();
             Vars.MainCanv = MainCanvas;
+            AllocConsole();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -40,6 +45,11 @@ namespace Pathfinding
         {
             var pos = e.GetPosition(MainCanvas);
             Vars.Engine.ToggleWall(pos);
+        }
+
+        private void Clear_Click(object sender, RoutedEventArgs e)
+        {
+            Vars.Engine.Clear();
         }
     }
 }
