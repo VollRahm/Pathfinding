@@ -1,2 +1,2 @@
 # Pathfinding
-Visualization of Pathfinding algorithm
+Visualization of Pathfinding algorithm (not perfect, but i was bored)
